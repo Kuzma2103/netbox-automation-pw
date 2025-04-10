@@ -9,10 +9,10 @@ export class BasePage {
 	}
 
 	/**
-	 * This method wait for element for provided time and click on it, with step tracking
-	 * @param locator - Locator of the element
-	 * @param elementName - Name of the element for logging in report
-	 * @param timeout - Wait for element to be visible. Default value is set to 4s
+	 * This method clicks on a visible element using its Locator, with step tracking.
+	 * @param locator - The Locator of the element to be clicked.
+	 * @param elementName - The name of the element for logging purposes.
+	 * @param timeout - Maximum time to wait for the element to be visible, in milliseconds. Default is 4000ms.
 	 */
 	async clickOnElement(
 		locator: Locator,
@@ -23,17 +23,17 @@ export class BasePage {
 	}
 
 	/**
-	 * This method wait for element for provided time and fill the element with provided text, with step tracking
-	 * @param locator - Locator of the element
-	 * @param text - Text to enter in element
-	 * @param elementName - Name of the element for logging in report
-	 * @param timeout - Default timeout of 5s
+	 * This method enters text into a visible element using its Locator, with step tracking.
+	 * @param locator - The Locator of the input element.
+	 * @param text - The text to enter in the input element.
+	 * @param elementName - The name of the element for logging purposes.
+	 * @param timeout - Maximum time to wait for the element to be visible, in milliseconds. Default is 4000ms.
 	 */
 	async enterTextInElement(
 		locator: Locator,
 		text: string,
 		elementName: string,
-		timeout: number = 5000
+		timeout: number = 4000
 	): Promise<void> {
 		await this.baseActions.enterTextInElement(
 			locator,
@@ -44,23 +44,29 @@ export class BasePage {
 	}
 
 	/**
-	 * This method choose option from dropdown, with step tracking
-	 * @param selector - Selector of the dropdown element
-	 * @param option - Option from dropdown element
+	 * This method selects an option from a visible dropdown element using its Locator, with step tracking.
+	 * @param selector - The Locator of the dropdown element.
+	 * @param option - The value attribute of the option to select.
+	 * @param timeout - Maximum time to wait for the dropdown to be visible, in milliseconds. Default is 4000ms.
 	 */
 	async selectOptionFromDropdown(
-		selector: string,
-		option: string
+		selector: Locator,
+		option: string,
+		timeout: number = 4000
 	): Promise<void> {
-		await this.baseActions.selectOptionFromDropdown(selector, option);
+		await this.baseActions.selectOptionFromDropdown(selector, option, timeout);
 	}
 
 	/**
-	 * This method return the text content of an element.
-	 * @param locator - Locator of the element
-	 * @returns - The text of the element
+	 * This method retrieves the trimmed text content of a visible element using its Locator, with step tracking.
+	 * @param locator - The Locator of the element.
+	 * @param timeout - Maximum time to wait for the element to be visible, in milliseconds. Default is 4000ms.
+	 * @returns The trimmed text content of the element.
 	 */
-	async getElementText(locator: string): Promise<string> {
-		return await this.baseActions.getElementText(locator);
+	async getElementText(
+		locator: Locator,
+		timeout: number = 4000
+	): Promise<string> {
+		return await this.baseActions.getElementText(locator, timeout);
 	}
 }

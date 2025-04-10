@@ -4,10 +4,11 @@ export class BaseActions {
 	constructor(readonly page: Page) {}
 
 	/**
-	 * This method wait for element to be visible and click on it with step tracking
-	 * @param locator - Locator of the element
-	 * @param elementName - Name of the element for logging in report
-	 * @param timeout - Time to wait for element to be visible
+	 * This method clicks on a element using its Locator with step tracking.
+	 * Ensures the element is visible before clicking on it.
+	 * @param locator - Locator of the element.
+	 * @param elementName - Name of the element for logging in report.
+	 * @param timeout - Time to wait for element to be visible.
 	 */
 	async clickOnElement(
 		locator: Locator,
@@ -32,10 +33,11 @@ export class BaseActions {
 	}
 
 	/**
-	 * This method wait for element to be visible and fill the element with provided text, with step tracking.
-	 * @param locator - Locator of the element
-	 * @param text - Text to enter in element
-	 * @param elementName - Name of the element for logging in report
+	 * This method enter the text into the element with step tracking.
+	 * Ensures the element is visible before entering the text.
+	 * @param locator - Locator of the element.
+	 * @param text - Text to enter in element.
+	 * @param elementName - Name of the element for logging in report.
 	 * @param timeout - Wait for element to be visible.
 	 */
 	async enterTextInElement(
@@ -50,61 +52,76 @@ export class BaseActions {
 				await expect(locator).toBeVisible({ timeout: timeout });
 				console.log(`Entering [${text}] into [${elementName}] element`);
 				await locator.fill(text);
-				console.log(`Successfully enter text into [${elementName}]`);
+				console.log(`Successfully entered text into [${elementName}]`);
 			});
 		} catch (error) {
 			console.error(
 				`Failed to enter text into element [${elementName}] with locator: [${locator}]. Error: [${error.message}]`
 			);
 			throw new Error(
-				`Error entering text inelement [${elementName}]. Stack trace: [${error.stack}]`
+				`Error entering text in element [${elementName}]. Stack trace: [${error.stack}]`
 			);
 		}
 	}
 
 	/**
-	 * This method choose the option from dropdown element with step tracking.
-	 * @param selector - Locator of dropdown element
-	 * @param option - Option from dropdown element
+	 * This method selects an option from a dropdown element using a Locator.
+	 * Ensures the dropdown is visible before selecting the desired option.
+	 * @param dropdownLocator - Locator of the dropdown element.
+	 * @param optionValue - The value attribute of the option to select.
+	 * @param timeout - The wait time for dropdown to be visible.
 	 */
 	async selectOptionFromDropdown(
-		selector: string,
-		option: string
+		dropdownLocator: Locator,
+		optionValue: string,
+		timeout: number
 	): Promise<void> {
 		try {
-			await test.step(`Select option [${option}] from dropdown with locator [${selector}]`, async () => {
+			await test.step(`Select option [${optionValue}] from dropdown with locator [${dropdownLocator}]`, async () => {
 				console.log(
-					`Attempt to select [${option}] from [${selector}] dropdown element`
+					`Attempting to select option [${optionValue}] from dropdown`
 				);
-				await this.page.selectOption(selector, option);
-				console.log(
-					`Successfully selected [${option}] from dropdown element with locator [${selector}]`
-				);
+				await expect(dropdownLocator).toBeVisible({ timeout: timeout });
+				await dropdownLocator.selectOption(optionValue);
+				console.log(`Successfully selected option [${optionValue}]`);
 			});
 		} catch (error) {
 			console.error(
-				`Failed to select [${option}] from dropdown element with locator [${selector}]. Error: [${error.message}]`
+				`Failed to select option [${optionValue}]. Error: ${error.message}`
 			);
 			throw new Error(
-				`Error selecting the [${option}] from dropdown element with locator [${selector}]. Stack trace: [${error.stack}]`
+				`Error selecting option [${optionValue}] from dropdown. Stack trace: ${error.stack}`
 			);
 		}
 	}
 
 	/**
-	 * This method gets the text content of an element.
-	 * @param locator The selector for the element
-	 * @returns The text content of the element
+	 * This method retrieves and returns the trimmed text content of a given element.
+	 * Ensures the element is visible before attempting to access its content.
+	 * @param locator - Locator of the element whose text is to be retrieved.
+	 * @param timeout - Wait time for element to be visible.
+	 * @returns A `Promise<string>` that resolves to the trimmed text content of the element.
 	 */
-	async getElementText(locator: string): Promise<string> {
-		const elementLocator = this.page.locator(locator);
-		// Retrieve the text content
-		const text = await elementLocator.textContent();
-		// Ensure the text is not null or undefined
-		if (!text) {
-			throw new Error(`Text content not found for element: [${locator}]`);
+	async getElementText(locator: Locator, timeout: number): Promise<string> {
+		try {
+			await expect(locator).toBeVisible({ timeout: timeout });
+			const text = await locator.textContent();
+			if (!text) {
+				throw new Error(
+					`Text content not found for element with locator [${locator}].`
+				);
+			}
+			console.log(
+				`Returned text from element with locator [${locator}]: [${text.trim()}]`
+			);
+			return text.trim();
+		} catch (error) {
+			console.error(
+				`Failed to get text from element with locator [${locator}]. Error: [${error.message}]`
+			);
+			throw new Error(
+				`Error retrieving text from element with locator [${locator}]. Stack trace: [${error.stack}]`
+			);
 		}
-		console.log(`Return the text from element with locator [${locator}]`);
-		return text.trim();
 	}
 }
